@@ -32,15 +32,16 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
 ]
 
-if os.environ.get("RENDER_EXTERNAL_HOSTNAME"):
-    ALLOWED_HOSTS.append(
-        os.environ["RENDER_EXTERNAL_HOSTNAME"]
-    )
+railway_domain = os.environ.get("RAILWAY_PUBLIC_DOMAIN")
+
+if railway_domain:
+    ALLOWED_HOSTS.append(railway_domain)
+
 CSRF_TRUSTED_ORIGINS = []
 
-if os.environ.get("RENDER_EXTERNAL_URL"):
+if railway_domain:
     CSRF_TRUSTED_ORIGINS.append(
-        os.environ["RENDER_EXTERNAL_URL"]
+        f"https://{railway_domain}"
     )
 # Application definition
 
