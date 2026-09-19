@@ -1,4 +1,4 @@
-import whisper
+from faster_whisper import WhisperModel
 
 _model = None
 
@@ -7,14 +7,16 @@ def get_model():
     global _model
 
     if _model is None:
-        print("Loading Whisper Model...")
+        print("Loading Faster Whisper model...")
 
-        _model = whisper.load_model(
-            "tiny",
-            device="cpu"
+        _model = WhisperModel(
+            "tiny.en",
+            device="cpu",
+            compute_type="int8",
+            cpu_threads=2,
         )
 
-        print("Whisper Loaded Successfully")
+        print("Faster Whisper loaded successfully")
 
     return _model
 
@@ -24,13 +26,17 @@ def transcribe_audio(audio_path):
 
     model = get_model()
 
-    result = model.transcribe(
+    segments, info = model.transcribe(
         audio_path,
-        fp16=False,
-        language="en"
+        language="en",
+        beam_size=1,
     )
 
-    print("TRANSCRIPT RESULT:")
-    print(result)
+    transcript = " ".join(
+        segment.text for segment in segments
+    ).strip()
 
-    return result["text"].strip()
+    print("TRANSCRIPT RESULT:")
+    print(transcript)
+
+    return transcript
