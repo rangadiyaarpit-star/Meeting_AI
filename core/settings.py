@@ -25,8 +25,14 @@ SECRET_KEY = 'django-insecure-^err!s4er6=l_lc%^+g&nsjm&xj$204p=^g%8(0qpn+ky%b$-w
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = [
+    "meeting-ai-ktor.onrender.com",
+    "localhost",
+    "127.0.0.1",
+]
+CSRF_TRUSTED_ORIGINS = [
+    "https://meeting-ai-ktor.onrender.com",
+]
 
 # Application definition
 
