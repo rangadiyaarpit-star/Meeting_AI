@@ -25,15 +25,23 @@ SECRET_KEY = 'django-insecure-^err!s4er6=l_lc%^+g&nsjm&xj$204p=^g%8(0qpn+ky%b$-w
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+import os
+
 ALLOWED_HOSTS = [
-    "meeting-ai-ktor.onrender.com",
     "localhost",
     "127.0.0.1",
 ]
-CSRF_TRUSTED_ORIGINS = [
-    "https://meeting-ai-ktor.onrender.com",
-]
 
+if os.environ.get("RENDER_EXTERNAL_HOSTNAME"):
+    ALLOWED_HOSTS.append(
+        os.environ["RENDER_EXTERNAL_HOSTNAME"]
+    )
+CSRF_TRUSTED_ORIGINS = []
+
+if os.environ.get("RENDER_EXTERNAL_URL"):
+    CSRF_TRUSTED_ORIGINS.append(
+        os.environ["RENDER_EXTERNAL_URL"]
+    )
 # Application definition
 
 INSTALLED_APPS = [
