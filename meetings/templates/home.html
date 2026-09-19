@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Meeting Assistant</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f172a, #111827, #1e1b4b);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            padding: 50px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .hero h1 {
+            font-size: 56px;
+            color: white;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .hero p {
+            color: #cbd5e1;
+            font-size: 18px;
+            max-width: 700px;
+            margin: auto;
+            line-height: 1.8;
+        }
+
+        .badge {
+            display: inline-block;
+            background: linear-gradient(90deg, #8b5cf6, #6366f1);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 50px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* Tabs System */
+        .tabs-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #94a3b8;
+            padding: 12px 24px;
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(90deg, #8b5cf6, #6366f1);
+            color: white;
+            border: none;
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .input-content {
+            display: none;
+        }
+
+        .input-content.active {
+            display: block;
+        }
+
+        .upload-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px dashed rgba(139, 92, 246, 0.6);
+            border-radius: 24px;
+            padding: 50px;
+            text-align: center;
+        }
+
+        .upload-box h3 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        .upload-box p {
+            color: #94a3b8;
+            margin-bottom: 25px;
+        }
+
+        input[type="file"] {
+            color: white;
+            font-size: 16px;
+        }
+
+        /* Text area styling */
+        .text-area-input {
+            width: 100%;
+            height: 180px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px dashed rgba(139, 92, 246, 0.6);
+            border-radius: 24px;
+            padding: 20px;
+            color: white;
+            font-size: 16px;
+            resize: none;
+            outline: none;
+            line-height: 1.6;
+        }
+
+        .text-area-input:focus {
+            border-color: #8b5cf6;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Mic Status animation */
+        .mic-status {
+            font-size: 18px;
+            color: #ef4444;
+            margin-top: 20px;
+            font-weight: 500;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+
+        .mic-status span {
+            width: 12px;
+            height: 12px;
+            background-color: #ef4444;
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse 1.5s infinite;
+        }
+
+        .btn {
+            width: 100%;
+            margin-top: 25px;
+            border: none;
+            padding: 18px;
+            border-radius: 16px;
+            background: linear-gradient(90deg, #8b5cf6, #6366f1);
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: .3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 30px rgba(99, 102, 241, .4);
+        }
+
+        .btn-record {
+            margin-top: 0;
+            width: auto;
+            padding: 12px 35px;
+            background: #dc2626;
+            border-radius: 12px;
+        }
+
+        .stats {
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .stat { text-align: center; }
+        .stat h2 { color: white; font-size: 32px; }
+        .stat p { color: #94a3b8; }
+
+        .features {
+            margin-top: 50px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .feature {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            transition: .3s;
+        }
+
+        .feature:hover { transform: translateY(-6px); }
+        .feature .icon { font-size: 40px; margin-bottom: 15px; }
+        .feature h4 { color: white; margin-bottom: 10px; }
+        .feature p { color: #94a3b8; line-height: 1.6; }
+
+        @media(max-width:768px) {
+            .card { padding: 25px; }
+            .hero h1 { font-size: 38px; }
+            .features, .stats { grid-template-columns: 1fr; }
+            .upload-box { padding: 30px; }
+            .tabs-container { flex-direction: column; gap: 10px; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="card">
+
+            <div class="hero">
+                <div class="badge">🚀 AI Powered Meeting Intelligence</div>
+                <h1>AI Meeting Assistant</h1>
+                <p>Transform audio recordings, live speech, or text notes into professional summaries and business insights in seconds.</p>
+            </div>
+
+            <div class="tabs-container">
+                <button type="button" class="tab-btn active" onclick="switchInputMode(event, 'file-mode')">📁 File Upload</button>
+                <button type="button" class="tab-btn" onclick="switchInputMode(event, 'mic-mode')">🎤 Live Mic Record</button>
+                <button type="button" class="tab-btn" onclick="switchInputMode(event, 'text-mode')">✍️ Text Input</button>
+            </div>
+
+            <form method="POST" action="/upload/" enctype="multipart/form-data" id="main-meeting-form">
+                {% csrf_token %}
+                
+                <input type="hidden" name="input_mode" id="input_mode" value="file">
+
+                <div id="file-mode" class="input-content active">
+                    <div class="upload-box">
+                        <h3>📁 Upload Audio File</h3>
+                        <p>MP3, WAV, M4A or Video Meeting Track</p>
+                        {{ form.audio_file }}
+                    </div>
+                </div>
+
+                <div id="mic-mode" class="input-content">
+                    <div class="upload-box">
+                        <h3>🎤 Live Microphone Recording</h3>
+                        <p style="margin-bottom: 15px;">Click below to capture your desktop speech / presentation live</p>
+                        
+                        <button type="button" class="btn btn-record" id="record-btn">Start Recording</button>
+                        
+                        <div class="mic-status" id="mic-status">
+                            <span></span> System Listening Live...
+                        </div>
+                    </div>
+                </div>
+
+                <div id="text-mode" class="input-content">
+                    <textarea class="text-area-input" name="text_input" placeholder="Paste raw conversation logs, rough notes, or external transcripts here..."></textarea>
+                </div>
+
+                <button type="submit" class="btn" id="submit-btn">Generate Transcript</button>
+            </form>
+
+            <div class="stats">
+                <div class="stat"><h2>AI</h2><p>Powered Notes</p></div>
+                <div class="stat"><h2>100%</h2><p>Cloud Based</p></div>
+                <div class="stat"><h2>PDF</h2><p>Export Ready</p></div>
+            </div>
+
+            <div class="features">
+                <div class="feature">
+                    <div class="icon">🎤</div>
+                    <h4>Multi-Input Mode</h4>
+                    <p>Process meetings via file upload, live microphone capture, or text dumps.</p>
+                </div>
+                <div class="feature">
+                    <div class="icon">🤖</div>
+                    <h4>AI Notes</h4>
+                    <p>Generate executive summaries and action items instantly.</p>
+                </div>
+                <div class="feature">
+                    <div class="icon">📄</div>
+                    <h4>Export Reports</h4>
+                    <p>Download professional reports and meeting documentation.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // 1. Tab switching system
+        function switchInputMode(event, modeId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.input-content').forEach(content => content.classList.remove('active'));
+            
+            event.currentTarget.classList.add('active');
+            document.getElementById(modeId).classList.add('active');
+            
+            const modeInput = document.getElementById('input_mode');
+            const submitBtn = document.getElementById('submit-btn');
+            
+            if (modeId === 'file-mode') {
+                modeInput.value = 'file';
+                submitBtn.innerText = 'Generate Transcript';
+            } else if (modeId === 'mic-mode') {
+                modeInput.value = 'mic';
+                submitBtn.innerText = 'Process Audio Recording';
+            } else if (modeId === 'text-mode') {
+                modeInput.value = 'text';
+                submitBtn.innerText = 'Generate AI Notes';
+            }
+        }
+
+        // 2. Hardware Level Browser Audio Recording
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+        
+        const recordBtn = document.getElementById('record-btn');
+        const micStatus = document.getElementById('mic-status');
+        const mainForm = document.getElementById('main-meeting-form');
+
+        recordBtn.addEventListener('click', async () => {
+            if (!isRecording) {
+                // Request Mic permissions and start recording
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then(stream => {
+                        mediaRecorder = new MediaRecorder(stream);
+                        mediaRecorder.start();
+                        audioChunks = [];
+
+                        mediaRecorder.addEventListener("dataavailable", event => {
+                            audioChunks.push(event.data);
+                        });
+
+                        isRecording = true;
+                        recordBtn.innerText = 'Stop Recording';
+                        recordBtn.style.background = '#4b5563'; 
+                        micStatus.style.display = 'flex';
+                    }).catch(err => {
+                        alert("Microphone Access Blocked! Check browser permissions.");
+                    });
+            } else {
+                // Stop recording and parse binary stream
+                mediaRecorder.stop();
+                isRecording = false;
+                recordBtn.innerText = 'Start Recording';
+                recordBtn.style.background = '#dc2626'; 
+                micStatus.style.display = 'none';
+
+                mediaRecorder.addEventListener("stop", () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    const file = new File([audioBlob], "live_mic_recording.wav", { type: "audio/wav" });
+                    
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    
+                    // Inject audio payload dynamically into Django request structure
+                    let hiddenFileInput = document.getElementById('hidden-mic-file');
+                    if(!hiddenFileInput){
+                        hiddenFileInput = document.createElement('input');
+                        hiddenFileInput.type = 'file';
+                        hiddenFileInput.name = 'recorded_audio';
+                        hiddenFileInput.id = 'hidden-mic-file';
+                        hiddenFileInput.style.display = 'none';
+                        mainForm.appendChild(hiddenFileInput);
+                    }
+                    hiddenFileInput.files = dataTransfer.files;
+                    
+                    alert('Audio chunk captured successfully! Press the submission button below.');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
