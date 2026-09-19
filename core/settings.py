@@ -28,21 +28,14 @@ DEBUG = True
 import os
 
 ALLOWED_HOSTS = [
+    "meetingai-production-69d1.up.railway.app",
     "localhost",
     "127.0.0.1",
 ]
 
-railway_domain = os.environ.get("RAILWAY_PUBLIC_DOMAIN")
-
-if railway_domain:
-    ALLOWED_HOSTS.append(railway_domain)
-
-CSRF_TRUSTED_ORIGINS = []
-
-if railway_domain:
-    CSRF_TRUSTED_ORIGINS.append(
-        f"https://{railway_domain}"
-    )
+CSRF_TRUSTED_ORIGINS = [
+    "https://meetingai-production-69d1.up.railway.app",
+]
 # Application definition
 
 INSTALLED_APPS = [
